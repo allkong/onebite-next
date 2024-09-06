@@ -6,6 +6,7 @@ import {
 } from 'next';
 import style from './[id].module.css';
 import fetchOneBook from '@/lib/fetch-one-book';
+import { useRouter } from 'next/router';
 
 const mockData = {
   id: 1,
@@ -26,7 +27,11 @@ export const getStaticPaths = () => {
       { params: { id: '2' } },
       { params: { id: '3' } },
     ],
-    fallback: false,
+    // Fallback 옵션 설정 (없는 경로로 요청 시)
+    // - false: path에 설정하지 않은 경로는 모두 404 반환
+    // - blocking: SSR 방식으로 실시간으로 페이지 생성(사전 렌더링)
+    // - true: SSR 방식 + props 데이터가 없는 fallback 상태의 페이지부터 반환
+    fallback: true,
   };
 };
 
@@ -35,6 +40,13 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
   // 즉 여기서 url 파라미터가 아예 없다는 건 말이 되지 않기 때문에 '!'를 써도 안전함
   const id = context.params!.id;
   const book = await fetchOneBook(Number(id));
+
+  if (!book) {
+    return {
+      notFound: true,
+    };
+  }
+
   return {
     props: {
       book,
@@ -45,9 +57,11 @@ export const getStaticProps = async (context: GetStaticPropsContext) => {
 export default function Page({
   book,
 }: InferGetStaticPropsType<typeof getStaticProps>) {
-  if (!book) {
-    return '문제가 발생했습니다. 다시 시도하세요.';
-  }
+  const router = useRouter();
+
+  // fallback 상태일 때 로딩 텍스트 띄어주기
+  if (router.isFallback) return '로딩중입니다.';
+  if (!book) return '문제가 발생했습니다. 다시 시도하세요.';
 
   const { id, title, subTitle, description, author, publisher, coverImgUrl } =
     book;
