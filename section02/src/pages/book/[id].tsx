@@ -1,4 +1,9 @@
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next';
+import {
+  GetServerSidePropsContext,
+  GetStaticPropsContext,
+  InferGetServerSidePropsType,
+  InferGetStaticPropsType,
+} from 'next';
 import style from './[id].module.css';
 import fetchOneBook from '@/lib/fetch-one-book';
 
@@ -14,9 +19,18 @@ const mockData = {
     'https://shopping-phinf.pstatic.net/main_3888828/38888282618.20230913071643.jpg',
 };
 
-export const getServerSideProps = async (
-  context: GetServerSidePropsContext
-) => {
+export const getStaticPaths = () => {
+  return {
+    paths: [
+      { params: { id: '1' } },
+      { params: { id: '2' } },
+      { params: { id: '3' } },
+    ],
+    fallback: false,
+  };
+};
+
+export const getStaticProps = async (context: GetStaticPropsContext) => {
   // [id].tsx는 무조건 url 파라미터가 하나 있어야만 접근할 수 있는 페이지임
   // 즉 여기서 url 파라미터가 아예 없다는 건 말이 되지 않기 때문에 '!'를 써도 안전함
   const id = context.params!.id;
@@ -30,7 +44,7 @@ export const getServerSideProps = async (
 
 export default function Page({
   book,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   if (!book) {
     return '문제가 발생했습니다. 다시 시도하세요.';
   }
