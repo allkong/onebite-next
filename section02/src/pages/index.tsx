@@ -4,11 +4,14 @@ import style from './index.module.css';
 import { ReactNode, useEffect } from 'react';
 import books from '@/mock/book.json';
 import BookItem from '@/components/book-item';
-import { InferGetServerSidePropsType } from 'next';
+import { InferGetServerSidePropsType, InferGetStaticPropsType } from 'next';
 import fetchBooks from '@/lib/fetch-books';
 import fetchRandomBooks from '@/lib/fetch-random-books';
 
-export const getServerSideProps = async () => {
+// SSR 방식: getServerSideProps
+// SSG 방식: getStaticProps
+export const getStaticProps = async () => {
+  console.log('인덱스 페이지');
   // 컴포넌트보다 먼저 실행되어서 컴포넌트에 필요한 데이터를 불러오는 함수
   const [allBooks, recoBooks] = await Promise.all([
     fetchBooks(),
@@ -23,11 +26,12 @@ export const getServerSideProps = async () => {
   };
 };
 
+// SSR 방식: InferGetServerSidePropsType<typeof getServerSideProps>
+// SSG 방식: InferGetStaticPropsType<typeof getStaticProps>
 export default function Home({
   allBooks,
   recoBooks,
-}: InferGetServerSidePropsType<typeof getServerSideProps>) {
-  console.log(recoBooks);
+}: InferGetStaticPropsType<typeof getStaticProps>) {
   return (
     <div className={style.container}>
       <section>
