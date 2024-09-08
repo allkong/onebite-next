@@ -13,8 +13,8 @@
 
 - [x] Section 0: 시작하며
 - [x] Section 1: Next.js를 소개합니다
-- [ ] Section 2: Page Router 핵심 정리
-- [ ] Section 3: App Router 시작하기
+- [x] Section 2: Page Router 핵심 정리
+- [x] Section 3: App Router 시작하기
 - [ ] Section 4: 데이터 페칭
 - [ ] Section 5: 페이지 캐싱
 - [ ] Section 6: 스트리밍과 에러핸들링
